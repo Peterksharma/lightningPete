@@ -141,11 +141,3 @@ Edit the JSON files in `data/pages/` to customize your content:
 3. Make your changes
 4. Test with `npm run build`
 5. Submit a pull request
-
-## 📄 License
-
-MIT License - feel free to use this system for your projects!
-
----
-
-Built with ❤️ for performance-first web development.
