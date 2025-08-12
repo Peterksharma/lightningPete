@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="{{LANGUAGE}}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TITLE}}</title>
+    <meta name="description" content="{{DESCRIPTION}}">
+    
+    <!-- Critical CSS inlined for performance -->
+    {{INLINE_CSS}}
+    
+    <!-- Preload hints for better performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+</head>
+<body>
+    <div id="app">
+        <!-- Components will be injected here -->
+        {{COMPONENTS}}
+    </div>
+    
+    <!-- JavaScript inlined for performance -->
+    {{INLINE_JS}}
+</body>
+</html>

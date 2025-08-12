@@ -1,0 +1,62 @@
+{
+  "page": {
+    "title": "About | Lightning Pete",
+    "description": "Learn about our mission to create the fastest websites possible.",
+    "components": ["header", "hero", "content", "footer"]
+  },
+  "header": {
+    "brand_text": "Lightning Pete",
+    "brand_url": "index.html",
+    "nav1_text": "Home",
+    "nav1_url": "index.html",
+    "nav2_text": "About",
+    "nav2_url": "about.html",
+    "nav3_text": "Templates",
+    "nav3_url": "templates.html",
+    "cta_text": "Get Started",
+    "cta_url": "#content"
+  },
+  "hero": {
+    "title": "About Lightning Pete",
+    "subtitle": "Our mission is to make every website lightning fast",
+    "cta_text": "View Templates",
+    "cta_url": "#templates"
+  },
+  "content": {
+    "title": "Our Approach",
+    "card1_title": "Build-Time Optimization",
+    "card1_description": "All content is processed at build time, eliminating runtime overhead.",
+    "card2_title": "Vanilla Technologies",
+    "card2_description": "No framework bloat. Pure HTML, CSS, and JavaScript for maximum performance.",
+    "card3_title": "Template System",
+    "card3_description": "Modular components that can be mixed and matched for any design."
+  },
+  "footer": {
+    "footer_title": "Lightning Pete",
+    "footer_description": "Building the fastest websites possible with vanilla technologies and performance-first design.",
+    "column1_title": "Product",
+    "link1_text": "Templates",
+    "link1_url": "#templates",
+    "link2_text": "Documentation",
+    "link2_url": "#docs",
+    "link3_text": "Examples",
+    "link3_url": "#examples",
+    "column2_title": "Company",
+    "link4_text": "About",
+    "link4_url": "about.html",
+    "link5_text": "Why Us",
+    "link5_url": "why-us.html",
+    "link6_text": "Contact",
+    "link6_url": "#contact",
+    "copyright_text": "©2025 Peter Sharma. All rights reserved.",
+    "social1_url": "#",
+    "social1_label": "Twitter",
+    "social1_icon": "🐦",
+    "social2_url": "#",
+    "social2_label": "GitHub",
+    "social2_icon": "💻",
+    "social3_url": "#",
+    "social3_label": "LinkedIn",
+    "social3_icon": "💼"
+  }
+}
