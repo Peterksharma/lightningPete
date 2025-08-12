@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop | Lightning Pete</title>
+    <meta name="description" content="Browse our collection of high-quality products with lightning-fast performance.">
+    
+    <!-- Critical CSS inlined for performance -->
+    <style>/* Critical path styles - loaded immediately */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { 
+    font-size: 16px; 
+    scroll-behavior: smooth;
+}
+
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #fff;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Loading optimization */
+#app {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#app.loaded {
+    opacity: 1;
+}
+
+/* Hero Template */
+.hero-template {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+}
+
+.hero-content h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.hero-content p {
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    margin-bottom: 2rem;
+}
+
+.cta-button {
+    display: inline-block;
+    background: #ff6b6b;
+    color: white;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.cta-button:hover {
+    background: #ff5252;
+    transform: translateY(-2px);
+}
+
+/* Header Template - Mobile First */
+.header-template {
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.nav-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+}
+
+.nav-brand .brand-link {
+    text-decoration: none;
+    color: #1a202c;
+    font-weight: 700;
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
+}
+
+.nav-toggle {
+    display: block;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.hamburger {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: #1a202c;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.hamburger::before,
+.hamburger::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 2px;
+    background: #1a202c;
+    transition: all 0.3s ease;
+}
+
+.hamburger::before { top: -8px; }
+.hamburger::after { bottom: -8px; }
+
+.nav-toggle[aria-expanded="true"] .hamburger {
+    background: transparent;
+}
+
+.nav-toggle[aria-expanded="true"] .hamburger::before {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+.nav-toggle[aria-expanded="true"] .hamburger::after {
+    transform: rotate(-45deg);
+    bottom: 0;
+}
+
+.nav-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    padding: 1rem 0;
+    list-style: none;
+    margin: 0;
+}
+
+.nav-menu.active {
+    display: block;
+}
+
+.nav-item {
+    margin: 0;
+}
+
+.nav-link,
+.nav-cta {
+    display: block;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: #4a5568;
+    transition: color 0.3s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link:hover {
+    color: #1a202c;
+}
+
+.nav-cta {
+    background: #667eea;
+    color: white;
+    border-radius: 8px;
+    margin: 0.5rem 1rem;
+    justify-content: center;
+}
+
+.nav-cta:hover {
+    background: #5a67d8;
+    color: white;
+}
+
+/* Footer Template - Mobile First */
+.footer-template {
+    background: #1a202c;
+    color: white;
+    padding: 2rem 0 1rem;
+}
+
+.footer-content {
+    display: grid;
+    gap: 2rem;
+}
+
+.footer-section {
+    text-align: center;
+}
+
+.footer-title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin-bottom: 1rem;
+    color: #f7fafc;
+}
+
+.footer-description {
+    color: #a0aec0;
+    line-height: 1.6;
+}
+
+.footer-links {
+    display: grid;
+    gap: 2rem;
+}
+
+.footer-column-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #f7fafc;
+}
+
+.footer-link-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.footer-link-list li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-link {
+    color: #a0aec0;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.footer-link:hover {
+    color: #f7fafc;
+}
+
+.footer-bottom {
+    border-top: 1px solid #2d3748;
+    padding-top: 1rem;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.footer-copyright {
+    color: #718096;
+    margin: 0;
+}
+
+.footer-social {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-link {
+    color: #a0aec0;
+    text-decoration: none;
+    padding: 0.5rem;
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+}
+
+.social-link:hover {
+    color: #f7fafc;
+}
+
+/* Shop Template - Mobile First */
+.shop-template {
+    padding: 2rem 0 4rem;
+}
+
+.shop-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.shop-header h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 1rem;
+    color: #1a202c;
+}
+
+.shop-header p {
+    font-size: clamp(1.1rem, 2vw, 1.25rem);
+    color: #4a5568;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.shop-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+}
+
+.filter-select {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    font-size: 1rem;
+    min-height: 44px;
+    cursor: pointer;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.products-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    margin-bottom: 2rem;
+}
+
+.product-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+.product-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.product-card:hover .product-overlay {
+    opacity: 1;
+}
+
+.quick-view-btn {
+    background: white;
+    color: #1a202c;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 44px;
+    transition: all 0.3s ease;
+}
+
+.quick-view-btn:hover {
+    background: #f7fafc;
+    transform: scale(1.05);
+}
+
+.product-info {
+    padding: 1.5rem;
+}
+
+.product-title {
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+    color: #1a202c;
+    line-height: 1.4;
+}
+
+.product-description {
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.product-price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+}
+
+.currency {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #059669;
+}
+
+.category-tag {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.product-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.add-to-cart-btn {
+    flex: 1;
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 44px;
+    transition: background 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+    background: #5a67d8;
+}
+
+.wishlist-btn {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.wishlist-btn:hover {
+    background: #e5e7eb;
+    color: #ef4444;
+}
+
+.shop-pagination {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.pagination-info {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* Templates Template - Mobile First */
+.templates-template {
+    padding: 2rem 0 4rem;
+}
+
+.templates-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.templates-header h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 1rem;
+    color: #1a202c;
+}
+
+.templates-header p {
+    font-size: clamp(1.1rem, 2vw, 1.25rem);
+    color: #4a5568;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.templates-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.template-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.template-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.template-preview {
+    aspect-ratio: 16/10;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.template-info {
+    padding: 1.5rem;
+}
+
+.template-info h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #1a202c;
+}
+
+.template-info p {
+    color: #4a5568;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.template-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.template-category {
+    background: #e2e8f0;
+    color: #4a5568;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.template-score {
+    color: #38a169;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.template-cta {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.3s ease;
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.template-cta:hover {
+    background: #5a67d8;
+}
+
+/* Why Us Template - Mobile First */
+.why-us-template {
+    padding: 2rem 0 4rem;
+}
+
+.why-us-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.why-us-header h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 1rem;
+    color: #1a202c;
+}
+
+.why-us-header p {
+    font-size: clamp(1.1rem, 2vw, 1.25rem);
+    color: #4a5568;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.why-us-content {
+    display: grid;
+    gap: 3rem;
+}
+
+.why-us-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.why-us-section h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin-bottom: 1rem;
+    color: #1a202c;
+}
+
+.why-us-section p {
+    color: #4a5568;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.why-us-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.why-us-list li {
+    color: #2d3748;
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    position: relative;
+    line-height: 1.5;
+}
+
+.why-us-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #38a169;
+    font-weight: bold;
+}
+
+.why-us-cta {
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: 12px;
+}
+
+.why-us-cta h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin-bottom: 1rem;
+}
+
+.why-us-cta p {
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.why-us-button {
+    display: inline-block;
+    background: #ff6b6b;
+    color: white;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.why-us-button:hover {
+    background: #ff5252;
+    transform: translateY(-2px);
+}
+
+/* Content Template */
+.content-template {
+    padding: 4rem 0;
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.content-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    transition: transform 0.3s ease;
+}
+
+.content-card:hover {
+    transform: translateY(-4px);
+}
+
+/* Gallery Template */
+.gallery-template {
+    padding: 4rem 0;
+    background: #f8fafc;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.gallery-item {
+    aspect-ratio: 4/3;
+    background: #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: scale(1.02);
+}
+
+.gallery-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+}
+
+/* Desktop Enhancements - Only essential improvements */
+@media (min-width: 768px) {
+    .nav-toggle {
+        display: none;
+    }
+    
+    .nav-menu {
+        display: flex;
+        position: static;
+        background: none;
+        border: none;
+        padding: 0;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .nav-cta {
+        margin: 0;
+        padding: 0.5rem 1rem;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr 2fr;
+        text-align: left;
+    }
+    
+    .footer-links {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .shop-filters {
+        flex-direction: row;
+        gap: 2rem;
+    }
+    
+    .filter-group {
+        flex: 1;
+    }
+    
+    .templates-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+    }
+    
+    .why-us-content {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .content-grid { grid-template-columns: 1fr; }
+    .gallery-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+    .templates-grid { grid-template-columns: 1fr; }
+    .why-us-content { grid-template-columns: 1fr; }
+    .products-grid { grid-template-columns: 1fr; }
+}
+
+</style>
+    
+    <!-- Preload hints for better performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+</head>
+<body>
+    <div id="app">
+        <!-- Components will be injected here -->
+        <header class="header-template">
+    <div class="container">
+        <nav class="nav-main">
+            <div class="nav-brand">
+                <a href="index.html" class="brand-link">
+                    <span class="brand-text">Lightning Pete</span>
+                </a>
+            </div>
+            
+            <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span class="hamburger"></span>
+            </button>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="templates.html" class="nav-link">Templates</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#templates" class="nav-cta">Get Started</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<section class="shop-template">
+    <div class="container">
+        <div class="shop-header">
+            <h1>Our Products</h1>
+            <p>Discover amazing products with lightning-fast shopping experience</p>
+        </div>
+        
+        <div class="shop-filters">
+            <div class="filter-group">
+                <label for="category-filter">Category:</label>
+                <select id="category-filter" class="filter-select">
+                    <option value="">All Categories</option>
+                    <option value="Bags">Bags</option><option value="Crewnecks">Crewnecks</option><option value="Footwear">Footwear</option><option value="Hoodies">Hoodies</option><option value="Leggings">Leggings</option><option value="Other">Other</option><option value="Outerwear">Outerwear</option><option value="Shorts">Shorts</option><option value="Slides">Slides</option><option value="Sweatpants">Sweatpants</option><option value="T-Shirts">T-Shirts</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="price-filter">Price:</label>
+                <select id="price-filter" class="filter-select">
+                    <option value="">All Prices</option>
+                    <option value="0-25">$0 - $25</option>
+                    <option value="25-50">$25 - $50</option>
+                    <option value="50-100">$50 - $100</option>
+                    <option value="100+">$100+</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="products-grid" id="productsGrid">
+            <div class="product-card" data-category="Slides" data-price="25.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/slides.jpg?v=1675447358" alt="Slides" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7982853619734">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Slides</h3>
+        <p class="product-description">Simple, minimal and comfortable, these slides feature a classic design in the perfect shade of iron. Whether you're just lounging around the house or running errands, these slides will offer all-day comfort.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">25.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Slides</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7982853619734">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7982853619734" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Sweatpants" data-price="35.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenSweatpants01.jpg?v=1675455387" alt="Sweatpants" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7982856273942">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Sweatpants</h3>
+        <p class="product-description">Soft and comfortable sweatpants in stylish shades. They are perfect for lounging with their cozy stretch fabric that offers just the right amount of warmth. Enjoy the ultimate relaxation experience!</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">35.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Sweatpants</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7982856273942">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7982856273942" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="T-Shirts" data-price="40.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenTshirt01.jpg?v=1675455410" alt="Men's T-shirt" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7982902771734">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Men's T-shirt</h3>
+        <p class="product-description">Crafted from organic cotton, this classic T-shirt features a relaxed fit, crew neckline and timeless look. Enjoy the breathable comfort of 100% organic cotton.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">40.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">T-Shirts</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7982902771734">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7982902771734" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Hoodies" data-price="90.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenHoodie01.jpg?v=1739549220" alt="Hoodie" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7982904639510">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Hoodie</h3>
+        <p class="product-description">This hoodie is the perfect choice for comfort and warmth. Meticulously crafted from 100% cotton, the hoodie features a soft, plush fleece interior and a unisex sizing design. Soft and lightweight, it's sure to be your go-to for chilly days.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">90.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Hoodies</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7982904639510">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7982904639510" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Hoodies" data-price="90.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/RedHoodie01.jpg?v=1739548873" alt="Soft Cotton Hoodie in Jam" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7982904705046">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Soft Cotton Hoodie in Jam</h3>
+        <p class="product-description">This hoodie is the perfect choice for comfort and warmth. Meticulously crafted from 100% cotton, the hoodie features a soft, plush fleece interior and a unisex sizing design. Soft and lightweight, it's sure to be your go-to for chilly days.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">90.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Hoodies</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7982904705046">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7982904705046" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Hoodies" data-price="90.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/ClayHoodie01.jpg?v=1739548707" alt="Soft Cotton Hoodie in Clay" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7982904836118">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Soft Cotton Hoodie in Clay</h3>
+        <p class="product-description">This hoodie is the perfect choice for comfort and warmth. Meticulously crafted from 100% cotton, the hoodie features a soft, plush fleece interior and a unisex sizing design. Soft and lightweight, it's sure to be your go-to for chilly days.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">90.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Hoodies</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7982904836118">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7982904836118" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Hoodies" data-price="90.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/OceanHoodie01.jpg?v=1739548678" alt="Soft Cotton Hoodie in Ocean" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7982904868886">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Soft Cotton Hoodie in Ocean</h3>
+        <p class="product-description">This hoodie is the perfect choice for comfort and warmth. Meticulously crafted from 100% cotton, the hoodie features a soft, plush fleece interior and a unisex sizing design. Soft and lightweight, it's sure to be your go-to for chilly days.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">90.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Hoodies</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7982904868886">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7982904868886" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Hoodies" data-price="90.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/PurpleHoodie01.jpg?v=1739548486" alt="Soft Cotton Hoodie in Violet" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7982904901654">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Soft Cotton Hoodie in Violet</h3>
+        <p class="product-description">This hoodie is the perfect choice for comfort and warmth. Meticulously crafted from 100% cotton, the hoodie features a soft, plush fleece interior and a unisex sizing design. Soft and lightweight, it's sure to be your go-to for chilly days.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">90.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Hoodies</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7982904901654">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7982904901654" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Hoodies" data-price="90.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/1_72ff506b-b5ff-43a0-bc65-9174c99d3d31.png?v=1675117122" alt="Soft Cotton Hoodie in Green" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7982904934422">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Soft Cotton Hoodie in Green</h3>
+        <p class="product-description">This hoodie is the perfect choice for comfort and warmth. Meticulously crafted from 100% cotton, the hoodie features a soft, plush fleece interior and a unisex sizing design. Soft and lightweight, it's sure to be your go-to for chilly days.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">90.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Hoodies</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7982904934422">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7982904934422" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Crewnecks" data-price="120.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenMenscrew01.jpg?v=1675454919" alt="Men's Crewneck" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7982905098262">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Men's Crewneck</h3>
+        <p class="product-description">This high-quality crewneck is perfect for your everyday look. Made with 100% cotton, it's soft, comfortable, and undeniably stylish. Full sleeved for a classic look and effortlessly versatile, this cotton crewneck is a must-have in any wardrobe.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">120.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Crewnecks</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7982905098262">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7982905098262" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Crewnecks" data-price="120.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenWomenscrew01.jpg?v=1675453375" alt="Women's Crewneck" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7983591030806">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Women's Crewneck</h3>
+        <p class="product-description">This high-quality crewneck is perfect for your everyday look. Made with 100% cotton, it's soft, comfortable, and undeniably stylish. Full sleeved for a classic look and effortlessly versatile, this cotton crewneck is a must-have in any wardrobe.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">120.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Crewnecks</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7983591030806">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7983591030806" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="T-Shirts" data-price="40.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenWomensTshirt01.jpg?v=1675463247" alt="Women's T-shirt" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7983592374294">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Women's T-shirt</h3>
+        <p class="product-description">Crafted from organic cotton, this classic T-shirt features a relaxed fit, crew neckline and timeless look. Enjoy the breathable comfort of 100% organic cotton.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">40.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">T-Shirts</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7983592374294">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7983592374294" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Footwear" data-price="40.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenCanvasSneaker01.jpg?v=1675454881" alt="Canvas Sneakers" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7983593095190">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Canvas Sneakers</h3>
+        <p class="product-description">These high-quality canvas sneakers offer a comfortable fit and superior breathability, thanks to their cushioning midsoles and durable construction. An array of stylish colors adds to the appeal, making them perfect for casual wear. Slip them on and enjoy reliable performance and style that lasts.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">40.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Footwear</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7983593095190">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7983593095190" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Bags" data-price="200.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenFrontpack.jpg?v=1675455064" alt="Frontpack" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7983593357334">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Frontpack</h3>
+        <p class="product-description">This frontpack is the perfect combination of form and function, with a modern, sporty design and patented technology that enables you to easily carry numerous items on the go. It's light, comfortable and has adjustable straps to fit all body types. Plus, its water-resistant outer shell ensures your items stay dry and secure.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">200.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Bags</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7983593357334">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7983593357334" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Other" data-price="100.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenHalfzip01.jpg?v=1675455104" alt="Half Zip" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7983593390102">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Half Zip</h3>
+        <p class="product-description">This half zip athletic sweatshirt is designed for optimum comfort and convenience. The half zip provides easy access to slip on and off, and the lightweight fabric is breathable and flexible, ideal for active pursuits. Perfect for athletes of all levels.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">100.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Other</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7983593390102">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7983593390102" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Leggings" data-price="20.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenLeggings03.jpg?v=1675455256" alt="Leggings" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7983593422870">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Leggings</h3>
+        <p class="product-description">These sporty and lightweight leggings are designed for comfort and ease of movement. Its moisture-wicking fabric and strong seams keep you feeling cool and secure. Available in an array of colors, these leggings are an ideal choice to look stylish while exercising.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">20.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Leggings</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7983593422870">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7983593422870" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Outerwear" data-price="80.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/green.jpg?v=1675459832" alt="Light Puffer" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7983593947158">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Light Puffer</h3>
+        <p class="product-description">This light puffer vest is made from durable nylon and will keep you dry and comfortable in all weather. Its light coating provides reliable protection from wind and rain, and its versatile fit offers maximum mobility. Perfect for moderate temperatures and varied conditions.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">80.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Outerwear</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7983593947158">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7983593947158" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Outerwear" data-price="80.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenPuffer01.jpg?v=1675455329" alt="Puffer" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7983594176534">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Puffer</h3>
+        <p class="product-description">This light puffer vest is made from durable nylon and will keep you dry and comfortable in all weather. Its light coating provides reliable protection from wind and rain, and its versatile fit offers maximum mobility. Perfect for moderate temperatures and varied conditions.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">80.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Outerwear</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7983594176534">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7983594176534" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Outerwear" data-price="90.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenPufferjacket01.jpg?v=1675455364" alt="Puffer Jacket" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7983594340374">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Puffer Jacket</h3>
+        <p class="product-description">This light puffer jacket is made from durable nylon and will keep you dry and comfortable in all weather. Its light coating provides reliable protection from wind and rain, and its versatile fit offers maximum mobility. Perfect for moderate temperatures and varied conditions.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">90.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Outerwear</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7983594340374">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7983594340374" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="Shorts" data-price="45.0">
+    <div class="product-image">
+        <img src="https://cdn.shopify.com/s/files/1/0688/1755/1382/products/GreenShorts.jpg?v=1675462426" alt="Shorts" loading="lazy">
+        <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="gid://shopify/Product/7983594471446">Quick View</button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">Shorts</h3>
+        <p class="product-description">These shorts are designed to help you reach peak performance. Constructed with high performance nylon fabric in a variety of shades, they are built to last and provide maximum comfort.</p>
+        
+        <div class="product-meta">
+            <div class="product-price">
+                <span class="currency">CAD</span>
+                <span class="amount">45.0</span>
+            </div>
+            
+            <div class="product-category">
+                <span class="category-tag">Shorts</span>
+            </div>
+        </div>
+        
+        <div class="product-actions">
+            <button class="add-to-cart-btn" data-product-id="gid://shopify/Product/7983594471446">
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="gid://shopify/Product/7983594471446" aria-label="Add to wishlist">
+                ♡
+            </button>
+        </div>
+    </div>
+</div>
+
+        </div>
+        
+        <div class="shop-pagination">
+            <div class="pagination-info">
+                Showing 20 products
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer-template">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">Lightning Pete</h3>
+                <p class="footer-description">Building the fastest websites possible with vanilla technologies and performance-first design.</p>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Product</h4>
+                    <ul class="footer-link-list">
+                        <li><a href="templates.html" class="footer-link">Templates</a></li>
+                        <li><a href="#docs" class="footer-link">Documentation</a></li>
+                        <li><a href="#examples" class="footer-link">Examples</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Company</h4>
+                    <ul class="footer-link-list">
+                        <li><a href="about.html" class="footer-link">About</a></li>
+                        <li><a href="why-us.html" class="footer-link">Why Us</a></li>
+                        <li><a href="#contact" class="footer-link">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p class="footer-copyright">©2025 Peter Sharma. All rights reserved.</p>
+            <div class="footer-social">
+                <a href="#" class="social-link" aria-label="Twitter">🐦</a>
+                <a href="#" class="social-link" aria-label="GitHub">💻</a>
+                <a href="#" class="social-link" aria-label="LinkedIn">💼</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    </div>
+    
+    <!-- JavaScript inlined for performance -->
+    <script>// Main application logic
+document.addEventListener('DOMContentLoaded', function() {
+    const app = document.getElementById('app');
+    
+    // Remove loading state
+    if (app) {
+        app.classList.add('loaded');
+    }
+    
+    // Mobile navigation functionality
+    const navToggle = document.querySelector('.nav-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', function() {
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', !isExpanded);
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!navToggle.contains(event.target) && !navMenu.contains(event.target)) {
+                navToggle.setAttribute('aria-expanded', 'false');
+                navMenu.classList.remove('active');
+            }
+        });
+        
+        // Close mobile menu on window resize (if switching to desktop)
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                navToggle.setAttribute('aria-expanded', 'false');
+                navMenu.classList.remove('active');
+            }
+        });
+    }
+    
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+    
+    // Performance monitoring
+    if ('performance' in window) {
+        window.addEventListener('load', () => {
+            const paintMetrics = performance.getEntriesByType('paint');
+            paintMetrics.forEach(metric => {
+                console.log(`${metric.name}: ${Math.round(metric.startTime)}ms`);
+            });
+            
+            // Log Core Web Vitals
+            if ('PerformanceObserver' in window) {
+                try {
+                    const observer = new PerformanceObserver((list) => {
+                        for (const entry of list.getEntries()) {
+                            console.log(`${entry.name}: ${Math.round(entry.value)}`);
+                        }
+                    });
+                    observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift'] });
+                } catch (e) {
+                    console.log('PerformanceObserver not supported');
+                }
+            }
+        });
+    }
+});
+</script>
+</body>
+</html>

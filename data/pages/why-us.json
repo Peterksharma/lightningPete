@@ -13,6 +13,8 @@
     "nav2_url": "about.html",
     "nav3_text": "Templates",
     "nav3_url": "templates.html",
+    "nav4_text": "Shop",
+    "nav4_url": "shop.html",
     "cta_text": "Get Started",
     "cta_url": "#templates"
   },

@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const glob = require('glob');
 const minify = require('minify');
+const https = require('https');
 
 class PerformanceBuilder {
     constructor() {
@@ -12,6 +13,84 @@ class PerformanceBuilder {
         
         // Ensure dist directory exists
         fs.ensureDirSync(this.distDir);
+    }
+
+    // Fetch data from external API
+    async fetchShopData() {
+        return new Promise((resolve, reject) => {
+            const url = 'https://mock.shop/api?query=%7B%20products(first%3A%2020)%20%7B%20edges%20%7B%20node%20%7B%20id%20title%20description%20featuredImage%20%7B%20id%20url%20%7D%20variants(first%3A%203)%20%7B%20edges%20%7B%20node%20%7B%20price%20%7B%20amount%20currencyCode%20%7D%20%7D%20%7D%20%7D%20%7D%20%7D%20%7D%7D';
+            
+            https.get(url, (res) => {
+                let data = '';
+                
+                res.on('data', (chunk) => {
+                    data += chunk;
+                });
+                
+                res.on('end', () => {
+                    try {
+                        const jsonData = JSON.parse(data);
+                        resolve(jsonData);
+                    } catch (error) {
+                        console.error('Error parsing shop data:', error.message);
+                        reject(error);
+                    }
+                });
+            }).on('error', (error) => {
+                console.error('Error fetching shop data:', error.message);
+                reject(error);
+            });
+        });
+    }
+
+    // Generate product HTML from shop data
+    generateProductHTML(products) {
+        const productCardTemplate = this.readTemplate(path.join(this.templatesDir, 'components', 'product-card.html'));
+        let productsHTML = '';
+        let categoryOptions = new Set();
+        
+        products.forEach(product => {
+            const node = product.node;
+            const price = node.variants.edges[0]?.node.price.amount || '0';
+            const currency = node.variants.edges[0]?.node.price.currencyCode || 'USD';
+            
+            // Extract category from title (simple approach)
+            const category = this.extractCategory(node.title);
+            categoryOptions.add(category);
+            
+            let productHTML = productCardTemplate
+                .replace(/\{\{PRODUCT_ID\}\}/g, node.id)
+                .replace(/\{\{PRODUCT_TITLE\}\}/g, node.title)
+                .replace(/\{\{PRODUCT_DESCRIPTION\}\}/g, node.description)
+                .replace(/\{\{PRODUCT_IMAGE_URL\}\}/g, node.featuredImage?.url || '')
+                .replace(/\{\{PRODUCT_PRICE\}\}/g, price)
+                .replace(/\{\{PRODUCT_CURRENCY\}\}/g, currency)
+                .replace(/\{\{PRODUCT_CATEGORY\}\}/g, category);
+            
+            productsHTML += productHTML;
+        });
+        
+        return {
+            productsHTML,
+            categoryOptions: Array.from(categoryOptions).sort(),
+            productsCount: products.length
+        };
+    }
+
+    // Extract category from product title
+    extractCategory(title) {
+        const titleLower = title.toLowerCase();
+        if (titleLower.includes('hoodie')) return 'Hoodies';
+        if (titleLower.includes('shirt') || titleLower.includes('tshirt')) return 'T-Shirts';
+        if (titleLower.includes('crewneck')) return 'Crewnecks';
+        if (titleLower.includes('sweatpants')) return 'Sweatpants';
+        if (titleLower.includes('shorts')) return 'Shorts';
+        if (titleLower.includes('leggings')) return 'Leggings';
+        if (titleLower.includes('puffer') || titleLower.includes('jacket')) return 'Outerwear';
+        if (titleLower.includes('sneakers') || titleLower.includes('shoes')) return 'Footwear';
+        if (titleLower.includes('slides')) return 'Slides';
+        if (titleLower.includes('frontpack') || titleLower.includes('bag')) return 'Bags';
+        return 'Other';
     }
 
     // Read and parse JSON data
@@ -54,22 +133,41 @@ class PerformanceBuilder {
         return result;
     }
 
-    // Process component templates
-    processComponents(baseTemplate, components, pageData) {
+    // Process component templates with dynamic data
+    async processComponents(baseTemplate, components, pageData) {
         let result = baseTemplate;
         const componentPlaceholder = '{{COMPONENTS}}';
         let componentsHTML = '';
 
         // Load and process each component
-        components.forEach(componentName => {
+        for (const componentName of components) {
             const componentPath = path.join(this.templatesDir, 'components', `${componentName}.html`);
             const componentTemplate = this.readTemplate(componentPath);
             
             if (componentTemplate && pageData[componentName]) {
-                const processedComponent = this.replaceVariables(componentTemplate, pageData[componentName]);
+                let processedComponent = this.replaceVariables(componentTemplate, pageData[componentName]);
+                
+                // Special handling for shop component
+                if (componentName === 'shop' && pageData[componentName].products) {
+                    const shopData = pageData[componentName];
+                    if (shopData.products.length > 0) {
+                        const { productsHTML, categoryOptions, productsCount } = this.generateProductHTML(shopData.products);
+                        
+                        // Generate category options HTML
+                        const categoryOptionsHTML = categoryOptions.map(cat => 
+                            `<option value="${cat}">${cat}</option>`
+                        ).join('');
+                        
+                        processedComponent = processedComponent
+                            .replace('{{PRODUCTS_HTML}}', productsHTML)
+                            .replace('{{CATEGORY_OPTIONS}}', categoryOptionsHTML)
+                            .replace('{{PRODUCTS_COUNT}}', productsCount);
+                    }
+                }
+                
                 componentsHTML += processedComponent + '\n';
             }
-        });
+        }
 
         return result.replace(componentPlaceholder, componentsHTML);
     }
@@ -114,9 +212,25 @@ class PerformanceBuilder {
             return;
         }
 
+        // Special handling for shop page - fetch data at build time
+        if (pageName === 'shop') {
+            try {
+                console.log('Fetching shop data...');
+                const shopData = await this.fetchShopData();
+                if (shopData.data && shopData.data.products) {
+                    pageData.shop.products = shopData.data.products.edges;
+                    console.log(`Fetched ${shopData.data.products.edges.length} products`);
+                }
+            } catch (error) {
+                console.error('Failed to fetch shop data:', error.message);
+                // Use fallback data or empty products array
+                pageData.shop.products = [];
+            }
+        }
+
         // Process components
         const components = pageData.page?.components || [];
-        let html = this.processComponents(baseTemplate, components, pageData);
+        let html = await this.processComponents(baseTemplate, components, pageData);
 
         // Replace page-level variables
         html = this.replaceVariables(html, {

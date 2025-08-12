@@ -1,0 +1,39 @@
+<section class="shop-template">
+    <div class="container">
+        <div class="shop-header">
+            <h1>{{TITLE}}</h1>
+            <p>{{SUBTITLE}}</p>
+        </div>
+        
+        <div class="shop-filters">
+            <div class="filter-group">
+                <label for="category-filter">Category:</label>
+                <select id="category-filter" class="filter-select">
+                    <option value="">All Categories</option>
+                    {{CATEGORY_OPTIONS}}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="price-filter">Price:</label>
+                <select id="price-filter" class="filter-select">
+                    <option value="">All Prices</option>
+                    <option value="0-25">$0 - $25</option>
+                    <option value="25-50">$25 - $50</option>
+                    <option value="50-100">$50 - $100</option>
+                    <option value="100+">$100+</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="products-grid" id="productsGrid">
+            {{PRODUCTS_HTML}}
+        </div>
+        
+        <div class="shop-pagination">
+            <div class="pagination-info">
+                Showing {{PRODUCTS_COUNT}} products
+            </div>
+        </div>
+    </div>
+</section>
