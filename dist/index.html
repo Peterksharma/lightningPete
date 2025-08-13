@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="MTc1NTA1NTUzNTk2MDo2MjM4N2M5ZmVmZTc2ZjI0MWNlMDk4YmExMGExODFhNg==">
+    <meta name="csrf-token" content="MTc1NTA1NjE1OTcwMTo3NjlkYWY5NTM0MWFiNDdiZDZiNDg4NGEzMTVlNTE1OQ==">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' 'unsafe-inline' checkout.shopify.com *.shopify.com;
@@ -3025,94 +3025,31 @@ if (window.checkout) {
         
         // Cart management (same as before)
         addToCart(productData) {
-            const validatedItem = this.validateCartItem(productData);
-            if (!validatedItem) return;
-            
-            const existingIndex = this.localCart.findIndex(item => item.id === validatedItem.id);
-            
-            if (existingIndex >= 0) {
-                this.localCart[existingIndex].quantity += validatedItem.quantity;
-            } else {
-                this.localCart.push(validatedItem);
-            }
-            
-            this.saveCartToStorage();
-            this.updateCartUI();
-            this.showNotification(`Added "${validatedItem.title}" to cart!`);
+            // This method is not needed - cart management is handled by MockShopCart
+            console.log('🛒 Performance checkout received addToCart call - delegating to mock cart');
+            // Don't add to performance checkout cart - let the mock cart handle it
         }
         
         validateCartItem(item) {
-            if (!item || typeof item !== 'object') return null;
-            if (!item.id || !item.title || typeof item.price !== 'number') return null;
-            
-            return {
-                id: item.id,
-                title: item.title.trim(),
-                price: item.price,
-                quantity: item.quantity || 1,
-                image: item.image || '/placeholder.jpg'
-            };
+            // This method is not needed - cart management is handled by MockShopCart
+            return null;
         }
         
         saveCartToStorage() {
-            localStorage.setItem('performanceCart', JSON.stringify(this.localCart));
+            // This method is not needed - cart management is handled by MockShopCart
         }
         
         loadCartFromStorage() {
-            try {
-                // First try to load from performance cart storage
-                let saved = localStorage.getItem('performanceCart');
-                
-                // If no performance cart data, try to load from mock shop cart
-                if (!saved) {
-                    saved = localStorage.getItem('mockShopCart');
-                }
-                
-                this.localCart = saved ? JSON.parse(saved) : [];
-                console.log('📦 Loaded cart from storage:', this.localCart);
-            } catch (error) {
-                console.warn('Failed to load cart from storage:', error);
-                this.localCart = [];
-            }
+            // This method is not needed - cart management is handled by MockShopCart
         }
         
         updateCartUI() {
-            const badge = document.querySelector('.cart-badge');
-            const itemCount = this.getItemCount();
-            
-            if (badge) {
-                badge.textContent = itemCount;
-                badge.style.display = itemCount > 0 ? 'flex' : 'none';
-            }
+            // This method is not needed - cart management is handled by MockShopCart
         }
     }
 
     // Initialize the performance checkout
     const checkout = new PerformanceCheckout();
-
-    // Global functions
-    function addToCart(productData) {
-        // Handle both object format and individual parameters
-        let formattedProduct;
-        
-        if (typeof productData === 'object' && productData !== null) {
-            // Object format: {id, title, price, image, quantity}
-            formattedProduct = productData;
-        } else {
-            // Individual parameters: addToCart(id, title, price, image, quantity)
-            const args = Array.from(arguments);
-            formattedProduct = {
-                id: args[0],
-                title: args[1],
-                price: args[2],
-                image: args[3],
-                quantity: args[4] || 1
-            };
-        }
-        
-        console.log('🛒 Adding to cart (formatted):', formattedProduct);
-        checkout.addToCart(formattedProduct);
-    }
 
     // Make checkout available globally
     window.checkout = checkout;
