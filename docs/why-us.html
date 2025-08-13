@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="MTc1NTA1NTMwODUzNDpiYTQ1OGQ4Mjk2YjYwNDI0OTBlNWNjZGNmNjZkMTQyOA==">
+    <meta name="csrf-token" content="MTc1NTA1NTUzNTY2NjpjYTlkNjlkMjBlNWUwODViYmY5M2M2NzFiMjc0MmZlZg==">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' 'unsafe-inline' checkout.shopify.com *.shopify.com;
@@ -3151,10 +3151,6 @@ if (window.checkout) {
         checkout.addToCart(formattedProduct);
     }
 
-    function proceedToCheckout() {
-        checkout.proceedToCheckout();
-    }
-
     // Make checkout available globally
     window.checkout = checkout;
 
@@ -3860,7 +3856,7 @@ function initializeImageLoading() {
             <div class="total-amount">Total: $0.00</div>
         </div>
         <div class="cart-actions">
-            <button onclick="proceedToCheckout()" class="checkout-btn">
+            <button onclick="cart.proceedToCheckout()" class="checkout-btn">
                 Checkout with Mock.Shop
             </button>
         </div>

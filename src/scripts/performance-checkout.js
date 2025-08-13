@@ -582,10 +582,6 @@ if (window.checkout) {
         checkout.addToCart(formattedProduct);
     }
 
-    function proceedToCheckout() {
-        checkout.proceedToCheckout();
-    }
-
     // Make checkout available globally
     window.checkout = checkout;
 
