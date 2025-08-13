@@ -63,10 +63,8 @@ if (window.checkout) {
             // Start with cart review step
             this.showCheckoutStep('cart');
             
-            // Ensure cart data is displayed immediately
-            setTimeout(() => {
-                this.refreshCheckoutCartDisplay();
-            }, 100);
+            // Populate cart data immediately after DOM insertion
+            this.refreshCheckoutCartDisplay();
         }
         
         // Add method to refresh cart display
@@ -145,12 +143,12 @@ if (window.checkout) {
                         <div class="checkout-step" data-step="cart">
                             <h3>Review Your Order</h3>
                             <div class="checkout-cart-items" id="checkoutCartItems">
-                                ${this.renderCartItems()}
+                                <!-- Cart items will be populated here -->
                             </div>
                             <div class="checkout-totals">
-                                <div class="subtotal">Subtotal: $${this.calculateSubtotal().toFixed(2)}</div>
-                                <div class="tax">Tax: $${(this.calculateSubtotal() * 0.08).toFixed(2)}</div>
-                                <div class="total">Total: $${this.calculateTotal().toFixed(2)}</div>
+                                <div class="subtotal">Subtotal: $0.00</div>
+                                <div class="tax">Tax: $0.00</div>
+                                <div class="total">Total: $0.00</div>
                             </div>
                             <button class="checkout-next-btn" onclick="checkout.nextStep()">
                                 Continue to Information
