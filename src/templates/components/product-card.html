@@ -22,9 +22,15 @@
         </div>
         
         <div class="product-actions">
-            <button class="add-to-cart-btn" onclick="addToCart('{{PRODUCT_ID}}', '{{PRODUCT_TITLE}}', {{PRODUCT_PRICE}}, '{{PRODUCT_IMAGE_URL}}')">
-                Add to Cart
-            </button>
+            <button class="add-to-cart-btn" onclick="addToCart({
+    id: '{{PRODUCT_ID}}',
+    title: '{{PRODUCT_TITLE}}',
+    price: {{PRODUCT_PRICE}},
+    image: '{{PRODUCT_IMAGE_URL}}',
+    quantity: 1
+})">
+    Add to Cart
+</button>
             <button class="wishlist-btn" data-product-id="{{PRODUCT_ID}}" aria-label="Add to wishlist">
                 ♡
             </button>

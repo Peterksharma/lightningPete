@@ -251,7 +251,7 @@ class PerformanceBuilder {
 
     // Inline CSS files
     inlineCSS() {
-        const cssFiles = ['critical.css', 'components.css'];
+        const cssFiles = ['critical.css', 'components.css', 'checkout.css'];
         let combinedCSS = '';
         
         cssFiles.forEach(cssFile => {
@@ -270,7 +270,7 @@ class PerformanceBuilder {
         const securityPath = path.join(this.srcDir, 'scripts', 'security.js');
         let combinedJS = '';
         
-                // Load security script first
+        // Load security script first
         if (fs.existsSync(securityPath)) {
             combinedJS += fs.readFileSync(securityPath, 'utf8') + '\n';
         }
@@ -285,6 +285,18 @@ class PerformanceBuilder {
         const shopifyPath = path.join(this.srcDir, 'scripts', 'shopify-client.js');
         if (fs.existsSync(shopifyPath)) {
             combinedJS += fs.readFileSync(shopifyPath, 'utf8') + '\n';
+        }
+
+        // Load performance checkout system
+        const performanceCheckoutPath = path.join(this.srcDir, 'scripts', 'performance-checkout.js');
+        if (fs.existsSync(performanceCheckoutPath)) {
+            combinedJS += fs.readFileSync(performanceCheckoutPath, 'utf8') + '\n';
+        }
+
+        // Load Mock.Shop cart system
+        const mockShopCartPath = path.join(this.srcDir, 'scripts', 'mock-shop-cart.js');
+        if (fs.existsSync(mockShopCartPath)) {
+            combinedJS += fs.readFileSync(mockShopCartPath, 'utf8') + '\n';
         }
 
         // Load main app script

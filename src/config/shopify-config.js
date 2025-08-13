@@ -4,41 +4,38 @@
  */
 
 const SHOPIFY_CONFIG = {
-    // Your Shopify store domain (without https://)
-    domain: 'your-shop.myshopify.com',
-    
-    // Your Storefront Access Token (public token - safe to expose)
-    storefrontAccessToken: 'your-storefront-access-token-here',
-    
-    // API version (keep this updated)
-    apiVersion: '2024-01',
-    
+    // Mock.Shop domain (free prototyping API)
+    domain: 'mock.shop',
+
+    // Mock.Shop doesn't require an access token
+    storefrontAccessToken: null, // Not needed for Mock.Shop
+
+    // Mock.Shop API version
+    apiVersion: '2023-01',
+
+    // Use Mock.Shop base URL
+    baseUrl: 'https://mock.shop/api',
+
     // Checkout settings
     checkout: {
-        // Maximum items per checkout
         maxItems: 50,
-        
-        // Maximum quantity per item
         maxQuantityPerItem: 10,
-        
-        // Auto-redirect to checkout after adding items
-        autoRedirect: false
+        autoRedirect: false,
+        // Mock checkout URL for testing
+        mockCheckoutUrl: 'https://mock.shop/checkout'
     },
-    
-    // Cart settings
+
     cart: {
-        // Persist cart in localStorage as fallback
         persistLocal: true,
-        
-        // Sync local cart with Shopify
-        syncWithShopify: true
+        syncWithShopify: false, // Set to false for Mock.Shop
+        useMockData: true // Flag to indicate we're using mock data
     },
-    
+
     // Product settings
     products: {
         // Default image for products without images
         defaultImage: '/placeholder-image.jpg',
-        
+
         // Image loading strategy
         imageLoading: 'lazy'
     }

@@ -7,15 +7,29 @@
 class PureShopifyClient {
     constructor() {
         // ✅ Public token - safe to expose
-        this.domain = window.SHOPIFY_CONFIG?.domain || 'your-shop.myshopify.com';
-        this.storefrontAccessToken = window.SHOPIFY_CONFIG?.storefrontAccessToken || 'your-storefront-access-token-here';
-        this.apiVersion = window.SHOPIFY_CONFIG?.apiVersion || '2024-01';
+        this.domain = window.SHOPIFY_CONFIG?.domain || 'mock.shop';
+        this.storefrontAccessToken = window.SHOPIFY_CONFIG?.storefrontAccessToken || null;
+        this.apiVersion = window.SHOPIFY_CONFIG?.apiVersion || '2023-01';
         this.checkout = null;
         this.isInitialized = false;
-        this.init();
+        
+        // Check if we're using Mock.Shop
+        this.isMockShop = this.domain === 'mock.shop';
+        
+        if (!this.isMockShop) {
+            this.init();
+        } else {
+            console.log('🛍️ Mock.Shop detected - skipping Shopify checkout initialization');
+            this.isInitialized = true;
+        }
     }
     
     async init() {
+        // Skip initialization for Mock.Shop
+        if (this.isMockShop) {
+            return;
+        }
+        
         try {
             // Create a new checkout session using GraphQL
             const checkout = await this.createCheckout();
@@ -33,6 +47,11 @@ class PureShopifyClient {
     
     // GraphQL query to create checkout
     async createCheckout() {
+        // Skip for Mock.Shop
+        if (this.isMockShop) {
+            return null;
+        }
+        
         const mutation = `
             mutation checkoutCreate($input: CheckoutCreateInput!) {
                 checkoutCreate(input: $input) {
@@ -99,19 +118,23 @@ class PureShopifyClient {
         }
     }
     
-    // Add product to checkout
-    async addProduct(variantId, quantity = 1) {
-        if (!this.isInitialized || !this.checkout) {
-            console.warn('Shopify not initialized, using local cart fallback');
-            return false;
+    // Add item to checkout
+    async addToCheckout(variantId, quantity = 1) {
+        // Skip for Mock.Shop
+        if (this.isMockShop) {
+            console.log('🛍️ Mock.Shop: addToCheckout called but not implemented');
+            return null;
+        }
+        
+        if (!this.checkout || !this.isInitialized) {
+            throw new Error('Checkout not initialized');
         }
         
         const mutation = `
-            mutation checkoutAddLineItems($checkoutId: ID!, $lineItems: [CheckoutLineItemInput!]!) {
-                checkoutAddLineItems(checkoutId: $checkoutId, lineItems: $lineItems) {
+            mutation checkoutLineItemsAdd($checkoutId: ID!, $lineItems: [CheckoutLineItemInput!]!) {
+                checkoutLineItemsAdd(checkoutId: $checkoutId, lineItems: $lineItems) {
                     checkout {
                         id
-                        webUrl
                         lineItems(first: 50) {
                             edges {
                                 node {
@@ -131,7 +154,6 @@ class PureShopifyClient {
                         }
                         subtotalPrice
                         totalPrice
-                        ready
                     }
                     checkoutUserErrors {
                         code
@@ -153,46 +175,48 @@ class PureShopifyClient {
                     query: mutation,
                     variables: {
                         checkoutId: this.checkout.id,
-                        lineItems: [
-                            {
-                                variantId: variantId,
-                                quantity: quantity
-                            }
-                        ]
+                        lineItems: [{
+                            variantId: variantId,
+                            quantity: quantity
+                        }]
                     }
                 })
             });
             
             const data = await response.json();
             
-            if (data.data?.checkoutAddLineItems?.checkout) {
-                this.checkout = data.data.checkoutAddLineItems.checkout;
+            if (data.data?.checkoutLineItemsAdd?.checkout) {
+                this.checkout = data.data.checkoutLineItemsAdd.checkout;
                 this.updateCartDisplay();
-                console.log('✅ Product added to Shopify checkout');
-                return true;
-            } else if (data.data?.checkoutAddLineItems?.checkoutUserErrors?.length > 0) {
-                throw new Error(data.data.checkoutAddLineItems.checkoutUserErrors[0].message);
+                return this.checkout;
+            } else if (data.data?.checkoutLineItemsAdd?.checkoutUserErrors?.length > 0) {
+                throw new Error(data.data.checkoutLineItemsAdd.checkoutUserErrors[0].message);
             } else {
-                throw new Error('Failed to add product');
+                throw new Error('Failed to add item to checkout');
             }
         } catch (error) {
-            console.error('❌ Add product error:', error);
-            return false;
+            console.error('❌ Add to checkout error:', error);
+            throw error;
         }
     }
     
-    // Remove product from checkout
-    async removeProduct(lineItemId) {
-        if (!this.isInitialized || !this.checkout) {
-            return false;
+    // Remove item from checkout
+    async removeFromCheckout(lineItemId) {
+        // Skip for Mock.Shop
+        if (this.isMockShop) {
+            console.log('🛍️ Mock.Shop: removeFromCheckout called but not implemented');
+            return null;
+        }
+        
+        if (!this.checkout || !this.isInitialized) {
+            throw new Error('Checkout not initialized');
         }
         
         const mutation = `
-            mutation checkoutRemoveLineItems($checkoutId: ID!, $lineItemIds: [ID!]!) {
-                checkoutRemoveLineItems(checkoutId: $checkoutId, lineItemIds: $lineItemIds) {
+            mutation checkoutLineItemsRemove($checkoutId: ID!, $lineItemIds: [ID!]!) {
+                checkoutLineItemsRemove(checkoutId: $checkoutId, lineItemIds: $lineItemIds) {
                     checkout {
                         id
-                        webUrl
                         lineItems(first: 50) {
                             edges {
                                 node {
@@ -212,7 +236,6 @@ class PureShopifyClient {
                         }
                         subtotalPrice
                         totalPrice
-                        ready
                     }
                     checkoutUserErrors {
                         code
@@ -241,247 +264,62 @@ class PureShopifyClient {
             
             const data = await response.json();
             
-            if (data.data?.checkoutRemoveLineItems?.checkout) {
-                this.checkout = data.data.checkoutRemoveLineItems.checkout;
+            if (data.data?.checkoutLineItemsRemove?.checkout) {
+                this.checkout = data.data.checkoutLineItemsRemove.checkout;
                 this.updateCartDisplay();
-                console.log('✅ Product removed from Shopify checkout');
-                return true;
-            } else if (data.data?.checkoutRemoveLineItems?.checkoutUserErrors?.length > 0) {
-                throw new Error(data.data.checkoutRemoveLineItems.checkoutUserErrors[0].message);
+                return this.checkout;
+            } else if (data.data?.checkoutLineItemsRemove?.checkoutUserErrors?.length > 0) {
+                throw new Error(data.data.checkoutLineItemsRemove.checkoutUserErrors[0].message);
             } else {
-                throw new Error('Failed to remove product');
+                throw new Error('Failed to remove item from checkout');
             }
         } catch (error) {
-            console.error('❌ Remove product error:', error);
-            return false;
+            console.error('❌ Remove from checkout error:', error);
+            throw error;
         }
-    }
-    
-    // Update product quantity
-    async updateProductQuantity(lineItemId, quantity) {
-        if (!this.isInitialized || !this.checkout) {
-            return false;
-        }
-        
-        if (quantity <= 0) {
-            return await this.removeProduct(lineItemId);
-        }
-        
-        const mutation = `
-            mutation checkoutUpdateLineItems($checkoutId: ID!, $lineItems: [CheckoutLineItemUpdateInput!]!) {
-                checkoutUpdateLineItems(checkoutId: $checkoutId, lineItems: $lineItems) {
-                    checkout {
-                        id
-                        webUrl
-                        lineItems(first: 50) {
-                            edges {
-                                node {
-                                    id
-                                    title
-                                    quantity
-                                    variant {
-                                        id
-                                        title
-                                        price
-                                        image {
-                                            url
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        subtotalPrice
-                        totalPrice
-                        ready
-                    }
-                    checkoutUserErrors {
-                        code
-                        field
-                        message
-                    }
-                }
-            }
-        `;
-        
-        try {
-            const response = await fetch(`https://${this.domain}/api/2024-01/graphql.json`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Shopify-Storefront-Access-Token': this.storefrontAccessToken
-                },
-                body: JSON.stringify({
-                    query: mutation,
-                    variables: {
-                        checkoutId: this.checkout.id,
-                        lineItems: [
-                            {
-                                id: lineItemId,
-                                quantity: quantity
-                            }
-                        ]
-                    }
-                })
-            });
-            
-            const data = await response.json();
-            
-            if (data.data?.checkoutUpdateLineItems?.checkout) {
-                this.checkout = data.data.checkoutUpdateLineItems.checkout;
-                this.updateCartDisplay();
-                console.log('✅ Product quantity updated in Shopify checkout');
-                return true;
-            } else if (data.data?.checkoutUpdateLineItems?.checkoutUserErrors?.length > 0) {
-                throw new Error(data.data.checkoutUpdateLineItems.checkoutUserErrors[0].message);
-            } else {
-                throw new Error('Failed to update product quantity');
-            }
-        } catch (error) {
-            console.error('❌ Update quantity error:', error);
-            return false;
-        }
-    }
-    
-    // Proceed to checkout
-    async proceedToCheckout() {
-        if (!this.isInitialized || !this.checkout) {
-            console.warn('Shopify not initialized, cannot proceed to checkout');
-            return false;
-        }
-        
-        if (this.getLineItems().length > 0) {
-            try {
-                // Redirect to Shopify's secure checkout
-                window.location.href = this.checkout.webUrl;
-                return true;
-            } catch (error) {
-                console.error('❌ Failed to redirect to checkout:', error);
-                return false;
-            }
-        } else {
-            console.warn('Cart is empty, cannot proceed to checkout');
-            return false;
-        }
-    }
-    
-    // Helper to get line items array
-    getLineItems() {
-        if (!this.checkout?.lineItems?.edges) return [];
-        return this.checkout.lineItems.edges.map(edge => edge.node);
     }
     
     // Update cart display
     updateCartDisplay() {
-        if (!this.checkout) return;
-        
-        const lineItems = this.getLineItems();
-        const itemCount = lineItems.reduce((total, item) => total + item.quantity, 0);
-        
-        // Update cart badge
-        const cartBadge = document.querySelector('.cart-badge');
-        if (cartBadge) {
-            cartBadge.textContent = itemCount;
-            cartBadge.style.display = itemCount > 0 ? 'block' : 'none';
-        }
-        
-        // Update cart items display
-        this.renderShopifyCartItems();
-    }
-    
-    // Render cart items
-    renderShopifyCartItems() {
-        const cartItems = document.getElementById('cartItems');
-        if (!cartItems || !this.checkout) return;
-        
-        const lineItems = this.getLineItems();
-        
-        if (lineItems.length === 0) {
-            cartItems.innerHTML = '<div class="cart-empty">Your cart is empty</div>';
+        // Skip for Mock.Shop
+        if (this.isMockShop) {
             return;
         }
         
-        const total = this.checkout.totalPrice;
+        if (!this.checkout) return;
         
-        cartItems.innerHTML = `
-            ${lineItems.map(item => `
-                <div class="cart-item" data-line-item-id="${item.id}">
-                    <div class="cart-item-image">
-                        <img src="${item.variant.image?.url || '/placeholder-image.jpg'}" alt="${item.title}" loading="lazy">
-                    </div>
-                    <div class="cart-item-details">
-                        <h4 class="cart-item-title">${item.title}</h4>
-                        <div class="cart-item-price">$${item.variant.price}</div>
-                        <div class="cart-item-quantity">
-                            <button onclick="event.stopPropagation(); window.shopify.updateProductQuantity('${item.id}', ${item.quantity - 1})" class="qty-btn">-</button>
-                            <span class="qty-number">${item.quantity}</span>
-                            <button onclick="event.stopPropagation(); window.shopify.updateProductQuantity('${item.id}', ${item.quantity + 1})" class="qty-btn">+</button>
-                        </div>
-                    </div>
-                    <button onclick="event.stopPropagation(); window.shopify.removeProduct('${item.id}')" class="remove-item-btn" aria-label="Remove item">×</button>
-                </div>
-            `).join('')}
-            <div class="cart-total">
-                <strong>Total: $${total}</strong>
-            </div>
-        `;
-    }
-    
-    // Get cart summary
-    getCartSummary() {
-        if (!this.checkout) return { items: [], total: 0, itemCount: 0 };
-        
-        const lineItems = this.getLineItems();
-        
-        return {
-            items: lineItems,
-            subtotal: this.checkout.subtotalPrice,
-            total: this.checkout.totalPrice,
-            itemCount: lineItems.reduce((total, item) => total + item.quantity, 0)
-        };
-    }
-    
-    // Check if Shopify is available
-    isAvailable() {
-        return this.isInitialized && this.checkout !== null;
-    }
-    
-    // Get checkout status
-    getCheckoutStatus() {
-        if (!this.checkout) return 'not_initialized';
-        
-        const lineItems = this.getLineItems();
-        if (lineItems.length === 0) return 'empty';
-        if (this.checkout.ready) return 'ready';
-        return 'processing';
-    }
-    
-    // Test connection to Shopify
-    async testConnection() {
-        try {
-            const response = await fetch(`https://${this.domain}/api/2024-01/graphql.json`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Shopify-Storefront-Access-Token': this.storefrontAccessToken
-                },
-                body: JSON.stringify({
-                    query: '{ shop { name } }'
-                })
-            });
-            
-            const data = await response.json();
-            return data.data?.shop?.name ? true : false;
-        } catch (error) {
-            console.error('❌ Shopify connection test failed:', error);
-            return false;
+        const cartBadge = document.querySelector('.cart-badge');
+        if (cartBadge) {
+            const itemCount = this.checkout.lineItems.edges.reduce((total, edge) => total + edge.node.quantity, 0);
+            cartBadge.textContent = itemCount;
+            cartBadge.style.display = itemCount > 0 ? 'flex' : 'none';
         }
     }
+    
+    // Get checkout URL
+    getCheckoutUrl() {
+        if (this.isMockShop) {
+            return 'https://mock.shop/checkout';
+        }
+        
+        return this.checkout?.webUrl || null;
+    }
+    
+    // Check if checkout is ready
+    isCheckoutReady() {
+        if (this.isMockShop) {
+            return true; // Mock.Shop is always "ready"
+        }
+        
+        return this.checkout?.ready || false;
+    }
 }
 
-// Initialize globally
-window.shopify = new PureShopifyClient();
+// Initialize the client
+const shopifyClient = new PureShopifyClient();
 
-// Export for module systems (if needed)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = PureShopifyClient;
-}
+// Make available globally
+window.shopifyClient = shopifyClient;
+
+console.log('🛍️ Shopify client initialized');
+

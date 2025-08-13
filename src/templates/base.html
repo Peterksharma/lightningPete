@@ -8,8 +8,8 @@
         default-src 'self';
         script-src 'self' 'unsafe-inline' checkout.shopify.com *.shopify.com;
         style-src 'self' 'unsafe-inline';
-        img-src 'self' data: cdn.shopify.com;
-        connect-src 'self' *.shopify.com;
+        img-src 'self' data: cdn.shopify.com mock.shop;
+        connect-src 'self' *.shopify.com mock.shop;
         frame-src checkout.shopify.com;
     ">
     <title>{{TITLE}}</title>
@@ -33,11 +33,16 @@
     <!-- Cart dropdown (hidden by default) -->
     <div class="cart-dropdown" id="cartDropdown" style="display: none;">
         <div class="cart-items" id="cartItems">
-            <!-- Items populated by JavaScript -->
+            <!-- Items populated by Mock.Shop cart -->
         </div>
-        <button onclick="proceedToCheckout()" class="checkout-btn">
-            Checkout with Shopify
-        </button>
+        <div class="cart-total" id="cartTotal" style="display: none;">
+            <div class="total-amount">Total: $0.00</div>
+        </div>
+        <div class="cart-actions">
+            <button onclick="proceedToCheckout()" class="checkout-btn">
+                Checkout with Mock.Shop
+            </button>
+        </div>
     </div>
 </body>
 </html>

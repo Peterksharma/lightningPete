@@ -65,6 +65,8 @@ class SecurityManager {
 
     // Cart item validation
     validateCartItem(item) {
+        console.log('🔍 validateCartItem called with:', item);
+        
         const validatedItem = {
             id: null,
             title: null,
@@ -81,10 +83,18 @@ class SecurityManager {
             return null;
         }
         
-        // Title validation (alphanumeric, spaces, basic punctuation)
-        if (typeof item.title === 'string' && /^[a-zA-Z0-9\s\-_.,!?()]{1,100}$/.test(item.title)) {
+        // Title validation (alphanumeric, spaces, basic punctuation, apostrophes, and common special characters)
+        console.log('🔍 Validating title:', item.title);
+        console.log('🔍 Title type:', typeof item.title);
+        console.log('🔍 Title length:', item.title.length);
+        console.log('🔍 Title characters:', Array.from(item.title).map(c => c.charCodeAt(0)));
+        
+        if (typeof item.title === 'string' && /^[a-zA-Z0-9\s\-_.,!?()'&@#$%*+=:;<>[\]{}|~`]{1,100}$/.test(item.title)) {
+            console.log('✅ Title validation PASSED');
             validatedItem.title = item.title;
         } else {
+            console.log('❌ Title validation FAILED');
+            console.log('❌ Regex test result:', /^[a-zA-Z0-9\s\-_.,!?()'&@#$%*+=:;<>[\]{}|~`]{1,100}$/.test(item.title));
             this.logSecurityEvent('INVALID_PRODUCT_TITLE', { title: item.title });
             return null;
         }
