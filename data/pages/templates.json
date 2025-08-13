@@ -13,10 +13,10 @@
     "nav2_url": "about.html",
     "nav3_text": "Templates",
     "nav3_url": "templates.html",
-    "nav4_text": "Shop",
-    "nav4_url": "shop.html",
-    "cta_text": "Get Started",
-    "cta_url": "#templates"
+    "nav4_text": "Why Us",
+    "nav4_url": "why-us.html",
+    "cta_text": "Shop Now",
+    "cta_url": "shop.html"
   },
   "templates": {
     "title": "Performance Templates",
@@ -76,8 +76,8 @@
     "column1_title": "Product",
     "link1_text": "Templates",
     "link1_url": "templates.html",
-    "link2_text": "Documentation",
-    "link2_url": "#docs",
+    "link2_text": "Shop",
+    "link2_url": "shop.html",
     "link3_text": "Examples",
     "link3_url": "#examples",
     "column2_title": "Company",

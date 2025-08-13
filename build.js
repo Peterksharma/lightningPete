@@ -3,6 +3,7 @@ const path = require('path');
 const glob = require('glob');
 const minify = require('minify');
 const https = require('https');
+const crypto = require('crypto');
 
 class PerformanceBuilder {
     constructor() {
@@ -13,6 +14,14 @@ class PerformanceBuilder {
         
         // Ensure dist directory exists
         fs.ensureDirSync(this.distDir);
+    }
+
+    // Generate CSRF token for security
+    generateCSRFToken() {
+        const timestamp = Date.now();
+        const random = crypto.randomBytes(16).toString('hex');
+        const payload = `${timestamp}:${random}`;
+        return Buffer.from(payload).toString('base64');
     }
 
     // Fetch data from external API
@@ -43,7 +52,68 @@ class PerformanceBuilder {
         });
     }
 
-    // Generate product HTML from shop data
+    // Generate optimized image HTML with responsive sizing
+    generateOptimizedImageHTML(imageUrl, productTitle) {
+        if (!imageUrl) {
+            return `<div class="product-placeholder">${productTitle}</div>`;
+        }
+
+        // Generate responsive image sizes for different viewport widths
+        const sizes = [
+            { width: 300, suffix: '300w' },
+            { width: 400, suffix: '400w' },
+            { width: 600, suffix: '600w' },
+            { width: 800, suffix: '800w' },
+            { width: 1200, suffix: '1200w' }
+        ];
+
+        // Create srcset for responsive images with better sizing
+        const srcset = sizes.map(size => {
+            // For now, we'll use the original image but with proper sizing
+            // In production, you'd resize images to these exact dimensions
+            return `${imageUrl} ${size.suffix}`;
+        }).join(', ');
+
+        // Generate WebP version if possible (Shopify often provides this)
+        const webpUrl = imageUrl.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+        const webpSrcset = sizes.map(size => {
+            return `${webpUrl} ${size.suffix}`;
+        }).join(', ');
+
+        // Determine if this is likely a critical above-the-fold image
+        const isCriticalImage = this.isCriticalImage(imageUrl);
+
+        return `
+            <picture>
+                <source 
+                    type="image/webp" 
+                    srcset="${webpSrcset}"
+                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                >
+                <img 
+                    src="${imageUrl}" 
+                    srcset="${srcset}"
+                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                    alt="${productTitle}"
+                    loading="${isCriticalImage ? 'eager' : 'lazy'}"
+                    width="400"
+                    height="400"
+                    style="aspect-ratio: 1; object-fit: cover;"
+                    ${isCriticalImage ? 'fetchpriority="high"' : ''}
+                >
+            </picture>
+            ${isCriticalImage ? `<link rel="preload" as="image" href="${imageUrl}">` : ''}
+        `;
+    }
+
+    // Determine if image is likely critical (above-the-fold)
+    isCriticalImage(imageUrl) {
+        // First few products are likely above-the-fold
+        // This is a simple heuristic - in production you'd use more sophisticated logic
+        return true; // For now, treat all as critical for better performance
+    }
+
+    // Generate product HTML from shop data with optimized images
     generateProductHTML(products) {
         const productCardTemplate = this.readTemplate(path.join(this.templatesDir, 'components', 'product-card.html'));
         let productsHTML = '';
@@ -58,10 +128,17 @@ class PerformanceBuilder {
             const category = this.extractCategory(node.title);
             categoryOptions.add(category);
             
+            // Generate optimized image HTML
+            const optimizedImage = this.generateOptimizedImageHTML(
+                node.featuredImage?.url, 
+                node.title
+            );
+            
             let productHTML = productCardTemplate
                 .replace(/\{\{PRODUCT_ID\}\}/g, node.id)
                 .replace(/\{\{PRODUCT_TITLE\}\}/g, node.title)
                 .replace(/\{\{PRODUCT_DESCRIPTION\}\}/g, node.description)
+                .replace(/\{\{PRODUCT_IMAGE_HTML\}\}/g, optimizedImage)
                 .replace(/\{\{PRODUCT_IMAGE_URL\}\}/g, node.featuredImage?.url || '')
                 .replace(/\{\{PRODUCT_PRICE\}\}/g, price)
                 .replace(/\{\{PRODUCT_CURRENCY\}\}/g, currency)
@@ -190,11 +267,32 @@ class PerformanceBuilder {
     // Inline JavaScript
     inlineJS() {
         const jsPath = path.join(this.srcDir, 'scripts', 'app.js');
-        if (fs.existsSync(jsPath)) {
-            const jsContent = fs.readFileSync(jsPath, 'utf8');
-            return `<script>${jsContent}</script>`;
+        const securityPath = path.join(this.srcDir, 'scripts', 'security.js');
+        let combinedJS = '';
+        
+                // Load security script first
+        if (fs.existsSync(securityPath)) {
+            combinedJS += fs.readFileSync(securityPath, 'utf8') + '\n';
         }
-        return '';
+
+        // Load Shopify config
+        const shopifyConfigPath = path.join(this.srcDir, 'config', 'shopify-config.js');
+        if (fs.existsSync(shopifyConfigPath)) {
+            combinedJS += fs.readFileSync(shopifyConfigPath, 'utf8') + '\n';
+        }
+
+        // Load Shopify client script
+        const shopifyPath = path.join(this.srcDir, 'scripts', 'shopify-client.js');
+        if (fs.existsSync(shopifyPath)) {
+            combinedJS += fs.readFileSync(shopifyPath, 'utf8') + '\n';
+        }
+
+        // Load main app script
+        if (fs.existsSync(jsPath)) {
+            combinedJS += fs.readFileSync(jsPath, 'utf8') + '\n';
+        }
+        
+        return `<script>${combinedJS}</script>`;
     }
 
     // Build a single page
@@ -233,10 +331,13 @@ class PerformanceBuilder {
         let html = await this.processComponents(baseTemplate, components, pageData);
 
         // Replace page-level variables
-        html = this.replaceVariables(html, {
-            ...siteConfig,
-            ...pageData.page
-        });
+        html = html.replace(/\{\{LANGUAGE\}\}/g, siteConfig.language || 'en');
+        html = html.replace(/\{\{TITLE\}\}/g, pageData.page.title || '');
+        html = html.replace(/\{\{DESCRIPTION\}\}/g, pageData.page.description || '');
+        
+        // Add security features
+        const csrfToken = this.generateCSRFToken();
+        html = html.replace('{{CSRF_TOKEN}}', csrfToken);
 
         // Inline CSS and JS
         html = html.replace('{{INLINE_CSS}}', this.inlineCSS());

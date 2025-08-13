@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{CSRF_TOKEN}}">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' checkout.shopify.com *.shopify.com;
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: cdn.shopify.com;
+        connect-src 'self' *.shopify.com;
+        frame-src checkout.shopify.com;
+    ">
     <title>{{TITLE}}</title>
     <meta name="description" content="{{DESCRIPTION}}">
     
@@ -20,5 +29,15 @@
     
     <!-- JavaScript inlined for performance -->
     {{INLINE_JS}}
+    
+    <!-- Cart dropdown (hidden by default) -->
+    <div class="cart-dropdown" id="cartDropdown" style="display: none;">
+        <div class="cart-items" id="cartItems">
+            <!-- Items populated by JavaScript -->
+        </div>
+        <button onclick="proceedToCheckout()" class="checkout-btn">
+            Checkout with Shopify
+        </button>
+    </div>
 </body>
 </html>
